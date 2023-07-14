@@ -1,0 +1,92 @@
+
+
+def adjust_entity_boundaries(entities):
+    adjusted_entities = []
+    used_positions = set()
+
+    for entity in entities:
+        entity_text, start, end, entity_label = entity
+        new_start = start
+        new_end = end
+
+        while new_start <= new_end:
+            if new_start not in used_positions and new_end not in used_positions:
+                used_positions.update(range(new_start, new_end + 1))
+                adjusted_entities.append((entity_text, new_start, new_end, entity_label))
+                break
+            else:
+                new_start += 1
+                new_end += 1
+
+    return adjusted_entities
+
+def parsing_data(ner_tags, tokens, space_after):
+    text = ""
+    n = len(tokens)
+
+    for i in range(n):
+        if space_after[i] == True:
+            text = text + tokens[i] + ' '
+        else:
+            text += tokens[i]
+
+    entities = []
+    start = None
+    end = None
+    entity_label = None
+    data = ""
+    for i, tag in enumerate(ner_tags):
+        if space_after[i] == True:
+            data = data + tokens[i] + ' '
+        else:
+            data += tokens[i]
+        if tag.startswith("B-"):
+            if start is not None:
+                # end = i - 1
+                txt = ""
+                for j in range(start, end + 1):
+                    if space_after[j] == True:
+                        txt += tokens[j] + " "
+                    else:
+                        txt += tokens[j]
+                # entity_text = " ".join(tokens[start:end + 1])
+                start = data.find(txt)
+                end = start + len(txt) - 1
+                entities.append((txt, start, end, entity_label))
+                start = None
+                entity_label = None
+
+            start = i
+            entity_label = tag.split("-")[1]
+
+        elif tag.startswith("I-"):
+            if start is None:
+                continue
+            entity_label = tag.split("-")[1]
+
+        elif tag == "O":
+            if start is not None:
+                end = i - 1
+                txt = ""
+                for j in range(start, end + 1):
+                    if space_after[j] == True:
+                        txt += tokens[j] + " "
+                    else:
+                        txt += tokens[j]
+                entity_text = " ".join(tokens[start:end + 1])
+                start = data.find(txt)
+                end = start + len(txt) - 1
+                entities.append((txt, start, end, entity_label))
+                start = None
+                entity_label = None
+
+    if start is not None:
+        end = len(tokens) - 1
+        entity_text = " ".join(tokens[start:end + 1])
+        entities.append((entity_text, start, end, entity_label))
+
+    entities = adjust_entity_boundaries(entities)
+
+    train_data = (text, {"entities": [(start, end, label) for (_, start, end, label) in entities]})
+
+    return train_data
