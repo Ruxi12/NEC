@@ -1,1 +1,11 @@
 
+Iteration: 0  Losses: {'ner': 40281.09729158353}
+Iteration: 1  Losses: {'ner': 25050.549921328176}
+Iteration: 2  Losses: {'ner': 20759.417950281706}
+Iteration: 3  Losses: {'ner': 17437.52418812582}
+Iteration: 4  Losses: {'ner': 14988.077912482693}
+Iteration: 5  Losses: {'ner': 13196.931388790168}
+Iteration: 6  Losses: {'ner': 11909.342853853024}
+Iteration: 7  Losses: {'ner': 10597.919986218549}
+Iteration: 8  Losses: {'ner': 9657.04764285032}
+Iteration: 9  Losses: {'ner': 8632.717328139952}
