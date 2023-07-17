@@ -9,3 +9,10 @@ Iteration: 6  Losses: {'ner': 11909.342853853024}
 Iteration: 7  Losses: {'ner': 10597.919986218549}
 Iteration: 8  Losses: {'ner': 9657.04764285032}
 Iteration: 9  Losses: {'ner': 8632.717328139952}
+you are a bot that receives a raw text in Romanian language and returns entity information in a structured manner. For example for this text:
+'Început de octombrie, zi minunată de toamnă cu elevi frumoși dornici de lectură!Doamna profesor Radu Cătălina împreună cu un grup de elevi de la Colegiul Tehnic ,,Paul Dimo” au vizitat Filiala nr. 2 ,,Paul Păltănea” pentru a afla mai multe informații despre serviciile pe care biblioteca le oferă tuturor utilizatorilor.'
+The answer should be:
+{'entities': [(0, 20, 'DATETIME'), (37, 43, 'DATETIME'), (47, 52, 'PERSON'), (80, 109, 'PERSON'), (133, 138, 'PERSON'), (145, 173, 'ORG'), (185, 215, 'FACILITY'), (305, 319, 'PERSON')]})
+
+Please generate the answer for this text:
+'Joi, postul Al-Jazeera a difuzat apelul pe care liderul Consiliului Înțelepților Musulmani, Harith al Dhari, l-a făcut la răpitori pentru a-i elibera pe cei patru ostatici, spunând că o astfel de răpire aruncă Irakul și lumea arabă într-o lumină nefastă.'
