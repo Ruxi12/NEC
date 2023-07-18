@@ -1,3 +1,22 @@
+-- am adaugat partea de scor 
+
+Iteration: 0  Losses: {'ner': 39013.6157016868}
+Iteration: 1  Losses: {'ner': 24867.1017562274}
+Iteration: 2  Losses: {'ner': 20547.603219295874}
+Iteration: 3  Losses: {'ner': 17635.69722751665}
+Iteration: 4  Losses: {'ner': 15062.28127155799}
+Iteration: 5  Losses: {'ner': 13388.176244331155}
+Iteration: 6  Losses: {'ner': 11890.789665508148}
+Iteration: 7  Losses: {'ner': 10541.517491089444}
+Iteration: 8  Losses: {'ner': 9559.91523751775}
+Iteration: 8  Losses: {'ner': 8651.50327517148}
+
+Precision:  0.8039429124334785
+Recall:  0.8209213288872422
+F1-score:  0.8123434158264589
+
+
+
 
 Iteration: 0  Losses: {'ner': 40281.09729158353}
 Iteration: 1  Losses: {'ner': 25050.549921328176}
