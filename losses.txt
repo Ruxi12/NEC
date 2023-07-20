@@ -1,3 +1,32 @@
+
+-- 20 de epoci de antrenare -> loss-ul scade, insa recall, F1 sunt mai mici 
+
+Iteration: 0  Losses: {'ner': 39821.17529298356}
+Iteration: 1  Losses: {'ner': 25257.3296721348}
+Iteration: 2  Losses: {'ner': 20778.369161981587}
+Iteration: 3  Losses: {'ner': 17860.386915293366}
+Iteration: 4  Losses: {'ner': 15538.547767683991}
+Iteration: 5  Losses: {'ner': 13747.331818669423}
+Iteration: 6  Losses: {'ner': 12108.499821980575}
+Iteration: 7  Losses: {'ner': 10886.137104333455}
+Iteration: 8  Losses: {'ner': 9547.009949009833}
+Iteration: 9  Losses: {'ner': 8868.333231482182}
+Iteration: 10  Losses: {'ner': 8130.653817959614}
+Iteration: 11  Losses: {'ner': 7407.418789222871}
+Iteration: 12  Losses: {'ner': 7050.551252896329}
+Iteration: 13  Losses: {'ner': 6670.532749806565}
+Iteration: 14  Losses: {'ner': 6075.476736302982}
+Iteration: 15  Losses: {'ner': 5582.398344838041}
+Iteration: 16  Losses: {'ner': 5288.01906713974}
+Iteration: 17  Losses: {'ner': 5000.021254771354}
+Iteration: 18  Losses: {'ner': 4849.0924259605445}
+Iteration: 19  Losses: {'ner': 4487.990819142679}
+Precision:  0.8023566569484937
+Recall:  0.8157342225515624
+F1-score:  0.8089901402412886
+
+
+
 -- am adaugat partea de scor 
 
 Iteration: 0  Losses: {'ner': 39013.6157016868}
