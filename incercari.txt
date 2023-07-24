@@ -1,92 +1,263 @@
+import json
+import spacy
+import random
+from spacy.util import minibatch, compounding
+# print(spacy.__version__)
+from spacy.tokens import Doc
+from spacy.training import Example
+from spacy.scorer import Scorer
+from thinc.api import Adam, Linear
+from copy import deepcopy
+import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings("ignore")
 
 
-def adjust_entity_boundaries(entities):
-    adjusted_entities = []
-    used_positions = set()
-
-    for entity in entities:
-        entity_text, start, end, entity_label = entity
-        new_start = start
-        new_end = end
-
-        while new_start <= new_end:
-            if new_start not in used_positions and new_end not in used_positions:
-                used_positions.update(range(new_start, new_end + 1))
-                adjusted_entities.append((entity_text, new_start, new_end, entity_label))
-                break
-            else:
-                new_start += 1
-                new_end += 1
-
-    return adjusted_entities
-
-def parsing_data(ner_tags, tokens, space_after):
+def parsare_text(ner_tags, tokens, space_after):
+    n = len(ner_tags)
     text = ""
-    n = len(tokens)
-
-    for i in range(n):
+    i = 0  # Initialize loop index
+    entity = []
+    while i < n:
+        # formam pe parcurs textul
         if space_after[i] == True:
-            text = text + tokens[i] + ' '
+            text += tokens[i] + " "
         else:
             text += tokens[i]
 
-    entities = []
-    start = None
-    end = None
-    entity_label = None
-    data = ""
-    for i, tag in enumerate(ner_tags):
-        if space_after[i] == True:
-            data = data + tokens[i] + ' '
+        if ner_tags[i].startswith("B-"):
+            j = i + 1
+            txt = tokens[i]
+            ok = True
+            if space_after[i] == True:
+                txt += " "
+            while j < n and ner_tags[j].startswith("I-"):
+                ok = False
+                if space_after[j] == True:
+                    txt += tokens[j] + " "
+                    text += tokens[j] + " "
+                else:
+                    txt += tokens[j]
+                    text += tokens[j]
+                j += 1
+
+            if ok == False:  # a intrat in while - avem
+                # txt = txt.strip()
+                # text = text.strip()
+                length_substr = len(txt)
+                length = len(text)
+                start = length - length_substr
+                end = length
+
+                while text[end-1] == ' ':
+                    end -= 1
+                entity_label = ner_tags[i][2:]
+                i = j
+                entity.append((txt, start, end, entity_label))
+
+            else: # este doar o singur cuvant - entitate
+                # txt = txt.strip()
+                # text = text.strip()
+                new_txt = txt.strip()
+                new_text = text.strip()
+                length_substr = len(new_txt)
+                length = len(new_text)
+                start = length - length_substr
+                end = length
+
+                while text[end-1] == ' ':
+                    end -= 1
+                entity_label = ner_tags[i][2:]
+                i = j
+                entity.append((txt, start, end, entity_label))
+                # i += 1  # Increment loop index if no I- tag found
         else:
-            data += tokens[i]
-        if tag.startswith("B-"):
-            if start is not None:
-                # end = i - 1
-                txt = ""
-                for j in range(start, end + 1):
-                    if space_after[j] == True:
-                        txt += tokens[j] + " "
-                    else:
-                        txt += tokens[j]
-                # entity_text = " ".join(tokens[start:end + 1])
-                start = data.find(txt)
-                end = start + len(txt) - 1
-                entities.append((txt, start, end, entity_label))
-                start = None
-                entity_label = None
+            i += 1  # Increment loop index for other cases
 
-            start = i
-            entity_label = tag.split("-")[1]
-
-        elif tag.startswith("I-"):
-            if start is None:
-                continue
-            entity_label = tag.split("-")[1]
-
-        elif tag == "O":
-            if start is not None:
-                end = i - 1
-                txt = ""
-                for j in range(start, end + 1):
-                    if space_after[j] == True:
-                        txt += tokens[j] + " "
-                    else:
-                        txt += tokens[j]
-                entity_text = " ".join(tokens[start:end + 1])
-                start = data.find(txt)
-                end = start + len(txt) - 1
-                entities.append((txt, start, end, entity_label))
-                start = None
-                entity_label = None
-
-    if start is not None:
-        end = len(tokens) - 1
-        entity_text = " ".join(tokens[start:end + 1])
-        entities.append((entity_text, start, end, entity_label))
-
-    entities = adjust_entity_boundaries(entities)
-
-    train_data = (text, {"entities": [(start, end, label) for (_, start, end, label) in entities]})
-
+    train_data = (text, {"entities": [(start, end, label) for (_, start, end, label) in entity]})
     return train_data
+
+
+if __name__ == '__main__':
+
+    # datele de training
+    with open("train.json", 'r') as file:
+        json_data = json.load(file)
+    training_data = []
+    # gigi = "- Iohannis, Klaus Vacanță Iohannis - căruia puțin îi pasă că 40% populația țării trăiește sub limita sărăciei altfel nu ar putea să susțină sifonarea profiturilor de către multinaționalele străine și ar susține impozitul pe venit- BăsescuTraian Băsescu care a spus că aplicarea " \
+    #         "unui impozit pe venit ține de „Paleoliticul Financiar” semn că joacă în continuare " \
+    #         "cum îi cântă Sistemul și că i se fâlfâie de Sifonarea Profiturilor și de milioanele români "
+    # print(gigi[445:452])
+    for item in json_data:
+        id_value = item["id"]
+        ner_tags = item["ner_tags"]
+        ner_ids = item["ner_ids"]
+        tokens = item["tokens"]
+        space_after = item["space_after"]
+        data = parsare_text(ner_tags=ner_tags, tokens=tokens, space_after=space_after)
+        # print(data)
+        if data not in training_data:
+            training_data.append(data)
+
+    # citesc si datele din extra dataset
+
+    # Defineste numele fisierului
+    nume_fisier = "extra_dataset.json"
+    # Citeste continutul fisierului
+    with open(nume_fisier, "r") as fisier:
+        continut = json.load(fisier)
+
+    # train_data = (text, {"entities": [(start, end, label) for (_, start, end, label) in entity]})
+
+
+    for item in continut:
+        text = item["text"]
+        entities = item["entities"]
+        entity = []
+        for elem in entities:
+            start = elem["start"]
+            end = elem["end"]
+            label =  elem["label"]
+            entity.append((start, end, label))
+        data = (text, {"entities": entity})
+        training_data.append(data)
+
+
+
+    # creare fisier cu datele parsate dupa cum le vrea Spacy
+    file = open("output_file.txt", "w")
+    for data in training_data:
+        file.write(str(data))
+        file.write("\n")
+
+    # load the pretrained model
+    nlp = spacy.load("ro_core_news_lg")
+
+    # define the entity recognition pipeline
+    ner = nlp.get_pipe("ner")
+    for _, annotations in training_data:
+        for ent in annotations.get("entities"):
+            ner.add_label(ent[2])
+
+    # Disable unnecessary pipeline components
+    pipe_exceptions = ["ner", "trf_wordpiecer", "trf_tok2vec"]
+    unaffected_pipes = [pipe for pipe in nlp.pipe_names if pipe not in pipe_exceptions]
+
+    # citire date de validare
+    with open("valid.json", 'r') as file:
+        json_data = json.load(file)
+
+    validation_data = []
+    for item in json_data:
+        id_value = item["id"]
+        ner_tags = item["ner_tags"]
+        ner_ids = item["ner_ids"]
+        tokens = item["tokens"]
+        space_after = item["space_after"]
+        data = parsare_text(ner_tags=ner_tags, tokens=tokens, space_after=space_after)
+        # print(data)
+        if data not in validation_data:
+            validation_data.append(data)
+
+
+    with nlp.disable_pipes(*unaffected_pipes):
+
+        optimizer = Adam(learn_rate=0.001)
+        num_epochs = 20
+        dropout_rate = 0.2  # Starting dropout rate
+        batch_size = 1.0  # Starting batch size
+        losses_list = []
+        best_validation_loss = float('inf')
+        consecutive_no_improvement = 0
+        early_stopping_patience = 3  # Number of epochs to wait for improvement
+
+        for iteration in range(num_epochs):
+            random.shuffle(training_data)
+            losses = {}
+            batches = minibatch(training_data, size=compounding(batch_size, 32.0, 1.001))
+            for batch in batches:
+                texts = [text for text, _ in batch]
+                annotations = [annotation for _, annotation in batch]
+                examples = []
+                for text, annotation in zip(texts, annotations):
+                    doc = nlp.make_doc(text)
+                    example = Example.from_dict(doc, annotation)
+                    examples.append(example)
+                nlp.update(examples, sgd=optimizer, losses=losses, drop=dropout_rate)
+
+            # Calculate validation loss and check for early stopping
+            validation_losses = []
+            for text, annotations in validation_data:
+                doc = nlp.make_doc(text)
+                example = Example.from_dict(doc, annotations)
+                validation_losses.append(nlp.evaluate([example], verbose=False).get('ner'))
+
+            avg_validation_loss = sum(validation_losses) / len(validation_losses)
+            print("Iteration:", iteration, " Losses:", losses, "Validation Loss:", avg_validation_loss)
+
+            if avg_validation_loss < best_validation_loss:
+                best_validation_loss = avg_validation_loss
+                best_model = deepcopy(nlp)
+                consecutive_no_improvement = 0
+            else:
+                consecutive_no_improvement += 1
+                if consecutive_no_improvement >= early_stopping_patience:
+                    print("Early stopping: No improvement in validation loss for {} epochs.".format(
+                        early_stopping_patience))
+                    break
+
+            losses_list.append(losses)
+
+            # Adjust the dropout rate and batch size for the next iteration
+            dropout_rate -= 0.2 / num_epochs  # Linear decay from 0.2 to 0.0
+            batch_size += (4.0 - 1.0) / num_epochs  # Linear increase from 1.0 to 4.0
+
+    # losses = losses_list
+        #
+        # # Plot the diagram
+        # plt.plot(num_epochs, losses)
+        # plt.xlabel('Number of Epochs')
+        # plt.ylabel('Loss')
+        # plt.title('Loss vs. Number of Epochs')
+        # plt.show()
+
+
+    # citire date de validare
+    with open("valid.json", 'r') as file:
+        json_data = json.load(file)
+
+    validation_data = []
+    for item in json_data:
+        id_value = item["id"]
+        ner_tags = item["ner_tags"]
+        ner_ids = item["ner_ids"]
+        tokens = item["tokens"]
+        space_after = item["space_after"]
+        data = parsare_text(ner_tags=ner_tags, tokens=tokens, space_after=space_after)
+        # print(data)
+        if data not in validation_data:
+            validation_data.append(data)
+
+    # validation process - get the scores
+    scorer = Scorer()
+    examples = []
+    # Process each validation example and evaluate the model
+    for text, annotations in validation_data:
+        # Process the text with the trained model
+        doc_pred = nlp(text)
+        example = Example.from_dict(doc_pred, annotations)
+        examples.append(example)
+    # print(scorer.score_spans(examples, "ents"))
+    scores = scorer.score_spans(examples, "ents")
+
+    # Calculate evaluation metrics
+    # Print evaluation metrics
+    print("Precision: ", scores["ents_p"])
+    print("Recall: ", scores["ents_r"])
+    print("F1-score: ", scores["ents_f"])
+
+
+
+
+
+
