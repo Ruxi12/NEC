@@ -1,4 +1,50 @@
 
+-- 20 de iteratii optimizer = Adam(learn_rate=0.001)
+        num_epochs = 20
+        dropout_rate = 0.2  # Starting dropout rate
+        batch_size = 1.0  #
+Iteration: 0  Losses: {'ner': 32130.497174617765}
+Iteration: 1  Losses: {'ner': 26422.33606710411}
+Iteration: 2  Losses: {'ner': 23648.060757928444}
+Iteration: 3  Losses: {'ner': 21348.72044798884}
+Iteration: 4  Losses: {'ner': 19866.1426787204}
+Iteration: 5  Losses: {'ner': 18105.601612591734}
+Iteration: 6  Losses: {'ner': 16625.222168629625}
+Iteration: 7  Losses: {'ner': 15226.257765910943}
+Iteration: 8  Losses: {'ner': 14323.369816150647}
+Iteration: 9  Losses: {'ner': 13106.585383394055}
+Iteration: 10  Losses: {'ner': 11972.72928144918}
+Iteration: 11  Losses: {'ner': 10934.097241434583}
+Iteration: 12  Losses: {'ner': 9990.992995560302}
+Iteration: 13  Losses: {'ner': 8914.479654786937}
+Iteration: 14  Losses: {'ner': 8386.51805605448}
+Iteration: 15  Losses: {'ner': 7364.79271582385}
+Iteration: 16  Losses: {'ner': 6689.049813197348}
+Iteration: 17  Losses: {'ner': 5831.4187722949855}
+Iteration: 18  Losses: {'ner': 5247.3340155659}
+Iteration: 19  Losses: {'ner': 4499.133023862228}
+Precision:  0.8058111380145279
+Recall:  0.8220328516734593
+F1-score:  0.8138411689185059
+
+
+-- 10 iteratii, am adaugat vreo 30 de texte extra generate cu chat gpt
+Iteration: 0  Losses: {'ner': 39700.76822417689}
+Iteration: 1  Losses: {'ner': 25502.544942728447}
+Iteration: 2  Losses: {'ner': 20647.652405833356}
+Iteration: 3  Losses: {'ner': 17778.27398100447}
+Iteration: 4  Losses: {'ner': 15481.121648765595}
+Iteration: 5  Losses: {'ner': 14038.953011349613}
+Iteration: 6  Losses: {'ner': 12248.650858494453}
+Iteration: 7  Losses: {'ner': 10845.953258798612}
+Iteration: 8  Losses: {'ner': 9800.787674067204}
+Iteration: 9  Losses: {'ner': 8892.884621271558}
+Precision:  0.8089559503528839
+Recall:  0.821044831419044
+F1-score:  0.8149555623659209
+
+
+
 -- 20 de epoci de antrenare -> loss-ul scade, insa recall, F1 sunt mai mici 
 
 Iteration: 0  Losses: {'ner': 39821.17529298356}
@@ -38,7 +84,7 @@ Iteration: 5  Losses: {'ner': 13388.176244331155}
 Iteration: 6  Losses: {'ner': 11890.789665508148}
 Iteration: 7  Losses: {'ner': 10541.517491089444}
 Iteration: 8  Losses: {'ner': 9559.91523751775}
-Iteration: 8  Losses: {'ner': 8651.50327517148}
+Iteration: 9  Losses: {'ner': 8651.50327517148}
 
 Precision:  0.8039429124334785
 Recall:  0.8209213288872422
